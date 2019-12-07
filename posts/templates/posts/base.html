@@ -7,8 +7,19 @@
     <title>Insta Clone</title>
 </head>
 <body>
-    <h4>Base template   </h4>
-    {%block content %}
+    {% if messages %}
+    {% for message in messages %}
+    <li>{{message }}</li>
+    {%endfor %}
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <nav>
+        <a href='{% url "add_post" %}'>Add new Post</a>
+    </nav>
+    {% endif %}
+    
+    {% block content %}
     {% endblock %}
 </body>
 </html>

@@ -1,0 +1,11 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data" action='{% url "add_post" %}'>
+    {% csrf_token %}
+<input type="file" name='post_image'>
+<input type='text' name='post_caption'>
+<button type="submit">Create</button>
+</form>
+
+{% endblock content %}
