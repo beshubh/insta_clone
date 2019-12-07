@@ -1,0 +1,6 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
+<img src = '{{post.image.url}}' width =300px height = 300px >
+<h6>{{post.user.username}} : {{post.caption }}</h6>
+{% endblock %}

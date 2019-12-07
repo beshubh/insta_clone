@@ -1,0 +1,35 @@
+{%extends 'posts/base.html' %}
+
+{% block content %}
+
+{% for post in posts %}
+
+
+<img src='{{ post.image.url }}' alt='{{post.caption}}' width=200px height 200px> <br>
+<h5>{{post.user.username}}:{{post.caption }}</h5>
+{% for comment in post.comment_set.all %}
+<p>{{comment.user.username}}: {{comment.text}}</p>
+
+ __{% if comment.reply_set.all %}
+ {% for reply in comment.reply_set.all %}
+ <p>{{reply.parent_comment.user.username}}: {{reply.text}}</p>
+ {% endfor %}
+
+ {% endif %}
+ 
+ <form action = '{% url "add_reply" comment.id %}' enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+    <input type="text" name = 'reply' placeholder="Add reply">
+    <button type="submit">Add</button>
+   </form>
+{%endfor%}
+{% if user.is_authenticated %}
+<form action = '{% url "add_comment" post.id %}' enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+    <input type="text" name = 'comment' placeholder="Add comment">
+    <button type="submit">Add</button>
+</form>
+{% endif %}
+{%endfor %}
+
+{% endblock %}
