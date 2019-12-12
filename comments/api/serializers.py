@@ -7,7 +7,7 @@ from comments.models import Comment,Reply
 
 class CommentsSerializer(ModelSerializer):
     # comment_replies = HyperlinkedIdentityField(
-    #     view_name='comments-api:api_comment_replies',
+    #     view_name='comments-reply-api:api_comment_replies',
     #     lookup_field='pk',
     # )
     class Meta:
@@ -17,7 +17,6 @@ class CommentsSerializer(ModelSerializer):
             'user',
             'text',
             'timestamp',
-            # 'comment_replies',
         ]
 
 class CommentCreateSerializer(ModelSerializer):
@@ -37,7 +36,6 @@ class CommentsReplySerializer(ModelSerializer):
             'user',
             'text',
             'timestamp',
-            # 'comment_replies',
         ]
     def get_user(self, obj):
         return str(obj.user)
