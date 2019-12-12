@@ -1,4 +1,6 @@
-from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField,SerializerMethodField
+from rest_framework.serializers import (ModelSerializer,
+                                        HyperlinkedIdentityField,
+                                        SerializerMethodField)
 from posts.models import Post
 
 class PostListSerializer(ModelSerializer):
@@ -7,6 +9,10 @@ class PostListSerializer(ModelSerializer):
         lookup_field ='pk',
     )
     user = SerializerMethodField()
+    comments = HyperlinkedIdentityField(
+        view_name='comments-api:api_list_comments',
+        lookup_field='pk',
+    )
     class Meta:
         model = Post
         fields = [
@@ -16,6 +22,7 @@ class PostListSerializer(ModelSerializer):
             'caption',
             'timestamp',
             'updated',
+            'comments',
         ]
     def get_user(self, obj):
         return str(obj.user.username)

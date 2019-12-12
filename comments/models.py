@@ -14,7 +14,8 @@ class Comment(models.Model):
 
 
 class Reply(models.Model):
-    parent_comment = models.ForeignKey(Comment,on_delete=models.CASCADE)    
+    parent_comment = models.ForeignKey(Comment,on_delete=models.CASCADE)   
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True, blank=True) 
     text = models.TextField()
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)

@@ -19,7 +19,6 @@ from .pagination import PostLimitPagination,PostPageNumberPagination
 class PostListView(ListAPIView):
     serializer_class = PostListSerializer
     permisson_classes = [AllowAny]
-
     pagination_class = PostPageNumberPagination
     def get_queryset(self, *args,**kwargs):
         queryset_list = Post.objects.all()

@@ -22,7 +22,7 @@ urlpatterns = [
     path('',include('posts.urls')),
     path('',include('comments.urls')),
     path('api/',include(('posts.api.urls','posts.api'),namespace='insta-api')),
-    path('api/comments/',include(('comments.api.urls','comments.api'),namespace='comments-api')),
+    path('api/<int:pk>/comments/',include(('comments.api.urls','comments.api'),namespace='comments-api')),
 ]
 
 if settings.DEBUG:
