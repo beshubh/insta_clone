@@ -3,6 +3,6 @@ from .views import CommentListView,CommentDetail,CommentCreateView,CommentReplyL
 urlpatterns = [
     path('',CommentListView.as_view(),name = 'api_list_comments'),
     path('add_comment/',CommentCreateView.as_view(),name = 'api_add_comment'),
-    path('<int:comment_id>/',CommentDetail.as_view(),name = 'api_comment_detail'),
-    path('<int:comment_id>/replies/',include(('comments.api.reply_urls','comments.api'),namespace='comments-reply-api')),
+    path('<int:pk>/',CommentDetail.as_view(),name = 'api_comment_detail'),
+    path('<int:pk>/replies/',include(('comments.api.reply_urls','comments.api'),namespace='comments-reply-api')),
 ]

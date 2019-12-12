@@ -1,7 +1,7 @@
 from rest_framework.serializers import (ModelSerializer,
                                         HyperlinkedIdentityField,
                                         SerializerMethodField)
-from posts.models import Post
+from posts.models import Post,Like
 
 class PostListSerializer(ModelSerializer):
     url = HyperlinkedIdentityField(
@@ -13,6 +13,7 @@ class PostListSerializer(ModelSerializer):
         view_name='comments-api:api_list_comments',
         lookup_field='pk',
     )
+    likes = SerializerMethodField()
     class Meta:
         model = Post
         fields = [
@@ -23,11 +24,12 @@ class PostListSerializer(ModelSerializer):
             'timestamp',
             'updated',
             'comments',
+            'likes'
         ]
     def get_user(self, obj):
         return str(obj.user.username)
-
-
+    def get_likes(self,obj):
+        return obj.like_set.count()
 
 class PostCreateSerializer(ModelSerializer):
     class Meta:
@@ -70,3 +72,7 @@ class PostUpdateSerializer(ModelSerializer):
             'updated',
         ]
     
+class PostLikeSerializer(ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ['created']

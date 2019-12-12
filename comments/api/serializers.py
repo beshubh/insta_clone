@@ -6,10 +6,6 @@ from rest_framework.serializers import (ModelSerializer,
 from comments.models import Comment,Reply
 
 class CommentsSerializer(ModelSerializer):
-    # comment_replies = HyperlinkedIdentityField(
-    #     view_name='comments-reply-api:api_comment_replies',
-    #     lookup_field='pk',
-    # )
     class Meta:
         model = Comment
         fields = [
@@ -28,6 +24,14 @@ class CommentCreateSerializer(ModelSerializer):
             'timestamp',
         ]
 
+class CommentReplyCreateSerializer(ModelSerializer):
+
+    class Meta:
+        model = Reply   
+        fields = [
+            'text',
+            'timestamp',
+        ]
 class CommentsReplySerializer(ModelSerializer):
     user = SerializerMethodField()
     class Meta:

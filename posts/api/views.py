@@ -6,13 +6,20 @@ from rest_framework.generics import (ListAPIView,RetrieveAPIView,\
     DestroyAPIView,
     CreateAPIView,
     RetrieveUpdateAPIView)
-from .serializers import PostListSerializer,PostUpdateSerializer,PostCreateSerializer
+from .serializers import (PostListSerializer,
+                          PostUpdateSerializer,
+                          PostCreateSerializer,
+                          PostLikeSerializer
+)
+
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
     IsAdminUser,
     IsAuthenticatedOrReadOnly,
 )
+from rest_framework.response import Response
+from rest_framework import status
 from .permissions import  IsOwnerOrReadOnly
 from .pagination import PostLimitPagination,PostPageNumberPagination
 
@@ -55,3 +62,9 @@ class PostDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
 
+
+class PostLikeCreateView(CreateAPIView):
+    serializer_class = PostLikeSerializer
+    permission_classes = [IsAuthenticated]
+    def perform_create(self, serializer):
+        serializer.save(user = self.request.user, post =Post.objects.get(id=self.kwargs['pk']))

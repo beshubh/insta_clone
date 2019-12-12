@@ -23,6 +23,7 @@ urlpatterns = [
     path('',include('comments.urls')),
     path('api/',include(('posts.api.urls','posts.api'),namespace='insta-api')),
     path('api/<int:pk>/comments/',include(('comments.api.urls','comments.api'),namespace='comments-api')),
+    path('<int:pk>/replies/',include(('comments.api.reply_urls','comments.api'),namespace='comments-reply-api')),
 ]
 
 if settings.DEBUG:
