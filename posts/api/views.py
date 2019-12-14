@@ -22,7 +22,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .permissions import  IsOwnerOrReadOnly
 from .pagination import PostLimitPagination,PostPageNumberPagination
-
+from posts.models import Like
 class PostListView(ListAPIView):
     serializer_class = PostListSerializer
     permisson_classes = [AllowAny]
@@ -62,9 +62,28 @@ class PostDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
 
-
 class PostLikeCreateView(CreateAPIView):
     serializer_class = PostLikeSerializer
     permission_classes = [IsAuthenticated]
-    def perform_create(self, serializer):
-        serializer.save(user = self.request.user, post =Post.objects.get(id=self.kwargs['pk']))
+    def post(self, request, pk,format=None):
+        user = self.request.user
+        post_ = Post.objects.get(id=self.kwargs['pk'])
+        try:
+            like = Like.objects.get(user=user,post=post_)
+        except:
+            like = None
+        if not like:
+            serializer = PostLikeSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(user=user,post=post_)
+                return Response('LIKED', status = status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        else:
+            like.delete()
+            return Response('DISLIKED')
+        
+
+        
+        
