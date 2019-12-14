@@ -1,15 +1,19 @@
 from posts.models import Post
 from django.db.models import Q
 import json
-from rest_framework.generics import (ListAPIView,RetrieveAPIView,\
+from rest_framework.generics import (
+    ListAPIView,RetrieveAPIView,
     UpdateAPIView,
     DestroyAPIView,
     CreateAPIView,
-    RetrieveUpdateAPIView)
-from .serializers import (PostListSerializer,
-                          PostUpdateSerializer,
-                          PostCreateSerializer,
-                          PostLikeSerializer
+    RetrieveUpdateAPIView
+)
+
+from .serializers import (
+    PostListSerializer,
+    PostUpdateSerializer,
+    PostCreateSerializer,
+    PostLikeSerializer
 )
 
 from rest_framework.permissions import (
@@ -23,6 +27,8 @@ from rest_framework import status
 from .permissions import  IsOwnerOrReadOnly
 from .pagination import PostLimitPagination,PostPageNumberPagination
 from posts.models import Like
+
+# This view lists all the post 
 class PostListView(ListAPIView):
     serializer_class = PostListSerializer
     permisson_classes = [AllowAny]
@@ -42,6 +48,7 @@ class PostDetailView(RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class= PostListSerializer
 
+# View for creating new post
 class PostCreateView(CreateAPIView):
     queryset = Post.objects.all()
     serializer_class= PostCreateSerializer
@@ -49,7 +56,7 @@ class PostCreateView(CreateAPIView):
     def perform_create(self,serializer):
         serializer.save(user=self.request.user) 
 
-
+#
 class PostUpdateView(RetrieveUpdateAPIView):
     queryset = Post.objects.all()
     serializer_class= PostUpdateSerializer

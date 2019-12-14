@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 def upload_location(instance, filename):
-    return '{}/{}'.format(instance, filename)
+    return 'posts/{}/{}'.format(instance, filename)
 
 
 class Post(models.Model):

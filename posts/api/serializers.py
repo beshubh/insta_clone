@@ -66,9 +66,7 @@ class PostUpdateSerializer(ModelSerializer):
     class Meta:
         model = Post
         fields = [
-            'image',
             'caption',
-            'timestamp',
             'updated',
         ]
     
