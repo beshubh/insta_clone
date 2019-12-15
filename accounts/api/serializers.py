@@ -67,3 +67,13 @@ class FollowersListSerializer(serializers.ModelSerializer):
         fields = ['following_user']
     def get_following_user(self,obj):
         return obj.following_user.username
+
+class FollowingListSerializer(serializers.ModelSerializer):
+    followed_user = serializers.SerializerMethodField()
+    class Meta:
+        model = Follower
+        fields = ['followed_user']
+    
+    def get_followed_user(self, obj):
+        return obj.followed_user.username
+        

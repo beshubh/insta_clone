@@ -4,7 +4,8 @@ from knox.models import AuthToken
 from rest_framework import status
 from .serializers import (UserSerializer,RegisterSerializer,
                          LoginSerializer,UserListSerializer,
-                         FollowSerializer,FollowersListSerializer
+                         FollowSerializer,FollowersListSerializer,
+                         FollowingListSerializer,
 )
 from django.contrib.auth.models import User
 from accounts.models import Account ,Follower
@@ -54,9 +55,10 @@ class FollowUserView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, pk,format=None):
         following_user = self.request.user
-        followed_user = User.objects.get(id=pk)
+        account = Account.objects.get(id=pk)
+        followed_user = account.user
         try:
-            follow = Follower.objects.get(follwing_user=user,followed_user=followed_user)
+            follow = Follower.objects.get(following_user=following_user,followed_user=followed_user)
         except:
             follow = None
         if not follow:
@@ -68,12 +70,36 @@ class FollowUserView(generics.CreateAPIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         else:
+            return Response('You already follow {}'.format(followed_user.username))
+class UnFollowUserView(generics.CreateAPIView):
+    serializer_class = FollowSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, pk,format=None):
+        following_user = self.request.user
+        account = Account.objects.get(id=pk)
+        followed_user = account.user
+        try:
+            follow = Follower.objects.get(following_user=following_user,followed_user=followed_user)
+        except:
+            follow = None
+        if follow:
             follow.delete()
-            return Response('You unfollowed{}'.format(followed_user.username))
+            return Response('You unfollowed {}'.format(followed_user.username))
+        
+        else:
+            return Response('You does not follow {}'.format(followed_user.username))
         
 class FollowersList(generics.ListAPIView):
     serializer_class = FollowersListSerializer
     def get_queryset(self):
-        user = User.objects.get(id = self.kwargs['pk'])
+        account = Account.objects.get(id = self.kwargs['pk'])
+        user = account.user
         queryset = Follower.objects.filter(followed_user = user)
+        return queryset
+class FollowingList(generics.ListAPIView):
+    serializer_class = FollowingListSerializer
+    def get_queryset(self):
+        account = Account.objects.get(id=self.kwargs['pk'])
+        user = account.user 
+        queryset = Follower.objects.filter(following_user=user)
         return queryset
