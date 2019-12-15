@@ -24,10 +24,17 @@ class Account(models.Model):
 
 
 
-# class Follower(models.Model):
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL)
-#     on = models.DateTimeField(auto_now_add=True)
+class Follower(models.Model):
+    following_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,\
+                                                related_name='following_user',null=True,blank=True)
+    followed_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,\
+                                                related_name='followed_user',null=True,blank=True)
+    on = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.following_user.username
 
 # class Following(models.Model):
-#     user = models.DateTimeField(settings.AUTH_USER_MODEL)
+#     following_user = models.ForeignKey(settings.AUTH_USER_MODEL)
+#     followed_by_user = models.ForeignKey(settings.AUTH_USER_MODEL)
 #     on = models.DateTimeField(auto_now_add=True)

@@ -17,7 +17,7 @@ from .serializers import (
 )
 
 from rest_framework.permissions import (
-    AllowAny,
+    AllowAny,   
     IsAuthenticated,
     IsAdminUser,
     IsAuthenticatedOrReadOnly,

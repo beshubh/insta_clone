@@ -2,7 +2,7 @@ from rest_framework.serializers import (ModelSerializer,
                                         HyperlinkedIdentityField,
                                         SerializerMethodField)
 from posts.models import Post,Like
-
+from django.urls import reverse
 class PostListSerializer(ModelSerializer):
     url = HyperlinkedIdentityField(
         view_name = 'insta-api:post_detail_api',
@@ -24,7 +24,7 @@ class PostListSerializer(ModelSerializer):
             'timestamp',
             'updated',
             'comments',
-            'likes'
+            'likes',
         ]
     def get_user(self, obj):
         return str(obj.user.username)
