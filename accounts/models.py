@@ -21,3 +21,13 @@ class Account(models.Model):
     
     def __str__(self):
         return self.user.username
+
+
+
+# class Follower(models.Model):
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL)
+#     on = models.DateTimeField(auto_now_add=True)
+
+# class Following(models.Model):
+#     user = models.DateTimeField(settings.AUTH_USER_MODEL)
+#     on = models.DateTimeField(auto_now_add=True)
