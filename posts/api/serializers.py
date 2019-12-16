@@ -2,15 +2,21 @@ from rest_framework.serializers import (ModelSerializer,
                                         HyperlinkedIdentityField,
                                         SerializerMethodField)
 from posts.models import Post,Like
-from django.urls import reverse
-
+from rest_framework import  status
+from rest_framework.reverse import reverse
+from django.conf import  settings
+User = settings.AUTH_USER_MODEL
 import json
+import requests
+from accounts.models import  Account 
 class PostListSerializer(ModelSerializer):
     url = HyperlinkedIdentityField(
         view_name = 'insta-api:post_detail_api',
         lookup_field ='pk',
     )
-    user = SerializerMethodField()
+    userProfileImage = SerializerMethodField()
+    userName = SerializerMethodField()
+    userProfileUrl = SerializerMethodField()
     comments = HyperlinkedIdentityField(
         view_name='comments-api:api_list_comments',
         lookup_field='pk',
@@ -20,7 +26,9 @@ class PostListSerializer(ModelSerializer):
         model = Post
         fields = [
             'url',
-            'user',
+            'userProfileImage',
+            'userName',
+            'userProfileUrl',
             'image',
             'caption',
             'timestamp',
@@ -28,16 +36,29 @@ class PostListSerializer(ModelSerializer):
             'comments',
             'likes',
         ]
-    def get_user(self, obj):
-        account = obj.user.account
-        user = {
-            "username":obj.user.username,
-            "profile":reverse('accounts-api:api_user_detail',kwargs={'pk':obj.user.pk})
-        }
-        json.dumps(user)
-        return user
+    
     def get_likes(self,obj):
         return obj.like_set.count()
+    def get_userProfileImage(self,obj):
+        if settings.DEBUG:
+            domain = '127.0.0.1:8000'
+        else:
+            domain=None #WILL BE CHOOSE LATER 
+        account = obj.user.account
+        path = account.image.url 
+        url = 'http://{}{}'.format(domain,path)
+        return url
+    def get_userName(self,obj):
+        return str(obj.user.username)
+    def get_userProfileUrl(self,obj):
+        if settings.DEBUG:
+            domain = '127.0.0.1:8000'
+        else:
+            domain=None #WILL BE CHOOSE LATER 
+        account = obj.user.account
+        path = account.get_absolute_url()
+        url = 'http://{}{}'.format(domain,path)
+        return url
 
 class PostCreateSerializer(ModelSerializer):
     class Meta:

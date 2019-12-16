@@ -1,6 +1,9 @@
 from django.db import models
 from django.conf import settings
 from PIL import Image
+from rest_framework.reverse import reverse
+from django.http import HttpRequest,request
+from rest_framework.reverse import reverse_lazy
 def upload_location(instance, filename):
     return 'accounts/{}/{}'.format(instance, filename)
 
@@ -21,8 +24,8 @@ class Account(models.Model):
     
     def __str__(self):
         return self.user.username
-    
-
+    def get_absolute_url(self):
+        return reverse('accounts-api:api_user_detail',kwargs={'pk':self.pk})
 
 
 
