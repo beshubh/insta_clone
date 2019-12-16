@@ -15,7 +15,7 @@ from .serializers import (
     PostCreateSerializer,
     PostLikeSerializer
 )
-
+from accounts.api.serializers import UserListSerializer
 from rest_framework.permissions import (
     AllowAny,   
     IsAuthenticated,
@@ -56,19 +56,19 @@ class PostCreateView(CreateAPIView):
     def perform_create(self,serializer):
         serializer.save(user=self.request.user) 
 
-#
+#This view is used to update the post 
 class PostUpdateView(RetrieveUpdateAPIView):
     queryset = Post.objects.all()
     serializer_class= PostUpdateSerializer
     permission_classes = [IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
 
-
+# This view is used to delete the post
 class PostDeleteView(DestroyAPIView):
     queryset = Post.objects.all()
     serializer_class= PostUpdateSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
-
+# This View is used to like the post
 class PostLikeCreateView(CreateAPIView):
     serializer_class = PostLikeSerializer
     permission_classes = [IsAuthenticated]
@@ -92,5 +92,11 @@ class PostLikeCreateView(CreateAPIView):
             return Response('DISLIKED')
         
 
-        
-        
+
+# This view is used to get all the users who like the post         
+class PostLikeListView(ListAPIView):
+    serializer_class = UserListSerializer
+    def get_queryset(self, *args, **kwargs):
+        post = Post.objects.get(id=self.kwargs['pk'])
+        queryset = post.like_set.all()
+        return queryset 

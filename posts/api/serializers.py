@@ -3,6 +3,8 @@ from rest_framework.serializers import (ModelSerializer,
                                         SerializerMethodField)
 from posts.models import Post,Like
 from django.urls import reverse
+
+import json
 class PostListSerializer(ModelSerializer):
     url = HyperlinkedIdentityField(
         view_name = 'insta-api:post_detail_api',
@@ -27,7 +29,13 @@ class PostListSerializer(ModelSerializer):
             'likes',
         ]
     def get_user(self, obj):
-        return str(obj.user.username)
+        account = obj.user.account
+        user = {
+            "username":obj.user.username,
+            "profile":reverse('accounts-api:api_user_detail',kwargs={'pk':obj.user.pk})
+        }
+        json.dumps(user)
+        return user
     def get_likes(self,obj):
         return obj.like_set.count()
 
