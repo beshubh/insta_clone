@@ -108,3 +108,32 @@ class PostLikeSerializer(ModelSerializer):
     class Meta:
         model = Like
         fields = ['created']
+class UsersLikedPostSerializer(ModelSerializer):
+    userName = SerializerMethodField()
+    urlToProfile = SerializerMethodField()
+    userProfileImage = SerializerMethodField()
+
+    class Meta:
+        model = Like
+        fields = ['userName','userProfileImage','urlToProfile']
+    
+    def get_userName(self, obj):
+        return obj.account.user.username
+    def get_email(self, obj):
+        return obj.account.user.email
+    def get_userProfileImage(self,obj):
+        if settings.DEBUG:
+            domain = '127.0.0.1:8000'
+        else:
+            domain=None #WILL BE CHOOSEN LATER while deploying
+        path = obj.account.image.url
+        url = 'http://{}{}'.format(domain,path)
+        return url
+    def get_urlToProfile(self,obj):
+        if settings.DEBUG:
+            domain = '127.0.0.1:8000'
+        else:
+            domain=None #WILL BE CHOOSEN LATER while deploying
+        path = obj.account.get_absolute_url()
+        url = 'http://{}{}'.format(domain,path)
+        return url

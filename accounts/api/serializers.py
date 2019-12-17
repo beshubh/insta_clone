@@ -56,15 +56,15 @@ class UserListSerializer(serializers.ModelSerializer):
         return obj.user.username
     def get_email(self, obj):
         return obj.user.email
-    # def get_userProfileImage(self,obj):
-    #     if settings.DEBUG:
-    #         domain = '127.0.0.1:8000'
-    #     else:
-    #         domain=None #WILL BE CHOOSEN LATER while deploying
-    #     account = obj.user.account
-    #     path = account.image.url 
-    #     url = 'http://{}{}'.format(domain,path)
-    #     return url
+    def get_userProfileImage(self,obj):
+        if settings.DEBUG:
+            domain = '127.0.0.1:8000'
+        else:
+            domain=None #WILL BE CHOOSEN LATER while deploying
+        account = obj.user.account
+        path = account.image.url 
+        url = 'http://{}{}'.format(domain,path)
+        return url
 class UserDetailSerializer(serializers.ModelSerializer):
     userName = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()

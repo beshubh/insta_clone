@@ -13,7 +13,8 @@ from .serializers import (
     PostListSerializer,
     PostUpdateSerializer,
     PostCreateSerializer,
-    PostLikeSerializer
+    PostLikeSerializer,
+    UsersLikedPostSerializer
 )
 from accounts.api.serializers import UserListSerializer
 from rest_framework.permissions import (
@@ -76,13 +77,13 @@ class PostLikeCreateView(CreateAPIView):
         user = self.request.user
         post_ = Post.objects.get(id=self.kwargs['pk'])
         try:
-            like = Like.objects.get(user=user,post=post_)
+            like = Like.objects.get(account=user.account,post=post_)
         except:
             like = None
         if not like:
             serializer = PostLikeSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save(user=user,post=post_)
+                serializer.save(account=user.account,post=post_)
                 return Response('LIKED', status = status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -95,8 +96,11 @@ class PostLikeCreateView(CreateAPIView):
 
 # This view is used to get all the users who like the post         
 class PostLikeListView(ListAPIView):
-    serializer_class = UserListSerializer
+    serializer_class = UsersLikedPostSerializer
     def get_queryset(self, *args, **kwargs):
         post = Post.objects.get(id=self.kwargs['pk'])
         queryset = post.like_set.all()
-        return queryset 
+        return queryset
+        
+
+        
