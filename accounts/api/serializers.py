@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from accounts.models import Account,Follower
-
+from django.conf import  settings
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,20 +42,39 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError('Incorrect Credentials')
 
 class UserListSerializer(serializers.ModelSerializer):
-    username = serializers.SerializerMethodField()
+    userName = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
-    url_to_profile = serializers.HyperlinkedIdentityField(
-        view_name='accounts-api:api_user_detail',
+    urlToProfile = serializers.HyperlinkedIdentityField(
+        view_name='accounts-api:api_account_detail',
         lookup_field = 'pk',
     )
+    # userProfileImage =serializers. SerializerMethodField()    
     class Meta:
         model = Account
-        fields = ['username','email','image','url_to_profile']
-    def get_username(self, obj):
+        fields = ['userName','email','image','urlToProfile']
+    def get_userName(self, obj):
         return obj.user.username
     def get_email(self, obj):
         return obj.user.email
-
+    # def get_userProfileImage(self,obj):
+    #     if settings.DEBUG:
+    #         domain = '127.0.0.1:8000'
+    #     else:
+    #         domain=None #WILL BE CHOOSEN LATER while deploying
+    #     account = obj.user.account
+    #     path = account.image.url 
+    #     url = 'http://{}{}'.format(domain,path)
+    #     return url
+class UserDetailSerializer(serializers.ModelSerializer):
+    userName = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
+    class Meta:
+        model = Account
+        fields = ['userName','email','image']
+    def get_userName(self,obj):
+        return str(obj.user.username)
+    def get_email(self,obj):
+        return obj.user.email
 class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follower

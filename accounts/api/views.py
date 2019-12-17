@@ -6,6 +6,7 @@ from .serializers import (UserSerializer,RegisterSerializer,
                          LoginSerializer,UserListSerializer,
                          FollowSerializer,FollowersListSerializer,
                          FollowingListSerializer,
+                         UserDetailSerializer,
 )
 from django.contrib.auth.models import User
 from accounts.models import Account ,Follower
@@ -47,7 +48,7 @@ class UserListView(generics.ListAPIView):
     queryset = Account.objects.all()
 
 class UserDetail(generics.RetrieveAPIView):
-    serializer_class = UserListSerializer
+    serializer_class = UserDetailSerializer
     queryset = Account.objects.all()
 
 class FollowUserView(generics.CreateAPIView):

@@ -25,7 +25,7 @@ class Account(models.Model):
     def __str__(self):
         return self.user.username
     def get_absolute_url(self):
-        return reverse('accounts-api:api_user_detail',kwargs={'pk':self.pk})
+        return reverse('accounts-api:api_account_detail',kwargs={'pk':self.pk})
 
 
 

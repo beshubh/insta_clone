@@ -22,6 +22,10 @@ class PostListSerializer(ModelSerializer):
         lookup_field='pk',
     )
     likes = SerializerMethodField()
+    viewLikes = HyperlinkedIdentityField(
+        view_name='insta-api:post_likes_api',
+        lookup_field='pk'
+    )
     class Meta:
         model = Post
         fields = [
@@ -35,6 +39,7 @@ class PostListSerializer(ModelSerializer):
             'updated',
             'comments',
             'likes',
+            'viewLikes'
         ]
     
     def get_likes(self,obj):
@@ -43,7 +48,7 @@ class PostListSerializer(ModelSerializer):
         if settings.DEBUG:
             domain = '127.0.0.1:8000'
         else:
-            domain=None #WILL BE CHOOSE LATER 
+            domain=None #WILL BE CHOOSEN LATER while deploying
         account = obj.user.account
         path = account.image.url 
         url = 'http://{}{}'.format(domain,path)
