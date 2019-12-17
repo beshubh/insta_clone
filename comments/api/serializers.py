@@ -6,15 +6,27 @@ from rest_framework.serializers import (ModelSerializer,
 from comments.models import Comment,Reply
 
 class CommentsSerializer(ModelSerializer):
+    userName = SerializerMethodField()
+    urlToProfile = SerializerMethodField()
+    urlToProfileImage = SerializerMethodField()
     class Meta:
         model = Comment
         fields = [
             'post',
-            'user',
+            'userName',
+            'urlToProfileImage',
+            'urlToProfile',
             'text',
             'timestamp',
         ]
-
+    def get_userName(self,obj):
+        return obj.user.username
+    def get_urlToProfile(self,obj):
+        url = obj.user.account.get_full_url()
+        return url
+    def get_urlToProfileImage(self, obj):
+        url_to_image = obj.user.account.get_image_url()
+        return url_to_image
 class CommentCreateSerializer(ModelSerializer):
 
     class Meta:

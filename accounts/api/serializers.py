@@ -57,14 +57,7 @@ class UserListSerializer(serializers.ModelSerializer):
     def get_email(self, obj):
         return obj.user.email
     def get_userProfileImage(self,obj):
-        if settings.DEBUG:
-            domain = '127.0.0.1:8000'
-        else:
-            domain=None #WILL BE CHOOSEN LATER while deploying
-        account = obj.user.account
-        path = account.image.url 
-        url = 'http://{}{}'.format(domain,path)
-        return url
+        return obj.get_image_url()
 class UserDetailSerializer(serializers.ModelSerializer):
     userName = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
@@ -80,19 +73,29 @@ class FollowSerializer(serializers.ModelSerializer):
         model = Follower
         fields = ['on']
 class FollowersListSerializer(serializers.ModelSerializer):
-    following_user = serializers.SerializerMethodField()
+    userName = serializers.SerializerMethodField()
+    userProfileImage = serializers.SerializerMethodField()
+    urlToProfile = serializers.SerializerMethodField()
     class Meta:
         model = Follower
-        fields = ['following_user']
-    def get_following_user(self,obj):
-        return obj.following_user.username
-
+        fields = ['userName','userProfileImage','urlToProfile']
+    def get_userName(self,obj):
+        return str(obj.following_user.username)
+    def get_userProfileImage(self,obj):
+        return obj.following_user.account.get_image_url()
+    def get_urlToProfile(self,obj):
+        return obj.following_user.account.get_full_url()
 class FollowingListSerializer(serializers.ModelSerializer):
-    followed_user = serializers.SerializerMethodField()
+    userName = serializers.SerializerMethodField()
+    userProfileImage = serializers.SerializerMethodField()
+    urlToProfile = serializers.SerializerMethodField()
     class Meta:
         model = Follower
-        fields = ['followed_user']
-    
-    def get_followed_user(self, obj):
-        return obj.followed_user.username
+        fields = ['userName','userProfileImage','urlToProfile']
+    def get_userName(self,obj):
+        return str(obj.followed_user.username)
+    def get_userProfileImage(self,obj):
+        return obj.followed_user.account.get_image_url()
+    def get_urlToProfile(self,obj):
+        return obj.followed_user.account.get_full_url()
         

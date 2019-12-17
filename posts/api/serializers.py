@@ -45,25 +45,11 @@ class PostListSerializer(ModelSerializer):
     def get_likes(self,obj):
         return obj.like_set.count()
     def get_userProfileImage(self,obj):
-        if settings.DEBUG:
-            domain = '127.0.0.1:8000'
-        else:
-            domain=None #WILL BE CHOOSEN LATER while deploying
-        account = obj.user.account
-        path = account.image.url 
-        url = 'http://{}{}'.format(domain,path)
-        return url
+        return obj.user.account.get_image_url()
     def get_userName(self,obj):
         return str(obj.user.username)
     def get_userProfileUrl(self,obj):
-        if settings.DEBUG:
-            domain = '127.0.0.1:8000'
-        else:
-            domain=None #WILL BE CHOOSE LATER 
-        account = obj.user.account
-        path = account.get_absolute_url()
-        url = 'http://{}{}'.format(domain,path)
-        return url
+        return obj.user.account.get_full_url()
 
 class PostCreateSerializer(ModelSerializer):
     class Meta:
@@ -122,18 +108,6 @@ class UsersLikedPostSerializer(ModelSerializer):
     def get_email(self, obj):
         return obj.account.user.email
     def get_userProfileImage(self,obj):
-        if settings.DEBUG:
-            domain = '127.0.0.1:8000'
-        else:
-            domain=None #WILL BE CHOOSEN LATER while deploying
-        path = obj.account.image.url
-        url = 'http://{}{}'.format(domain,path)
-        return url
+        return obj.accoutn.get_image_url
     def get_urlToProfile(self,obj):
-        if settings.DEBUG:
-            domain = '127.0.0.1:8000'
-        else:
-            domain=None #WILL BE CHOOSEN LATER while deploying
-        path = obj.account.get_absolute_url()
-        url = 'http://{}{}'.format(domain,path)
-        return url
+        return obj.account.get_full_url()

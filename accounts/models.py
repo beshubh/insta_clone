@@ -4,6 +4,8 @@ from PIL import Image
 from rest_framework.reverse import reverse
 from django.http import HttpRequest,request
 from rest_framework.reverse import reverse_lazy
+from django.conf import  settings
+
 def upload_location(instance, filename):
     return 'accounts/{}/{}'.format(instance, filename)
 
@@ -26,7 +28,20 @@ class Account(models.Model):
         return self.user.username
     def get_absolute_url(self):
         return reverse('accounts-api:api_account_detail',kwargs={'pk':self.pk})
-
+    def get_full_url(self):
+        if settings.DEBUG:
+            domain = '127.0.0.1:8000'
+        else:
+            domain = None
+        path = self.get_absolute_url()
+        return 'http://{}{}'.format(domain,path)
+    def get_image_url(self):
+        if settings.DEBUG:
+            domain = '127.0.0.1:8000'
+        else:
+            domain = None
+        path = self.image.url
+        return 'http://{}{}'.format(domain,path)
 
 
 class Follower(models.Model):
@@ -38,8 +53,3 @@ class Follower(models.Model):
     
     def __str__(self):
         return self.following_user.username
-
-# class Following(models.Model):
-#     following_user = models.ForeignKey(settings.AUTH_USER_MODEL)
-#     followed_by_user = models.ForeignKey(settings.AUTH_USER_MODEL)
-#     on = models.DateTimeField(auto_now_add=True)
