@@ -48,7 +48,7 @@ class UserListView(generics.ListAPIView):
     queryset = Account.objects.all()
 
 class UserDetail(generics.RetrieveAPIView):
-    serializer_class = UserDetailSerializer
+    serializer_class = UserDetailSerializer 
     queryset = Account.objects.all()
 
 class FollowUserView(generics.CreateAPIView):

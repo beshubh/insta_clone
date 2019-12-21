@@ -28,7 +28,7 @@ from rest_framework import status
 from .permissions import  IsOwnerOrReadOnly
 from .pagination import PostLimitPagination,PostPageNumberPagination
 from posts.models import Like
-
+from accounts.models import Follower
 # This view lists all the post 
 class PostListView(ListAPIView):
     serializer_class = PostListSerializer
@@ -47,8 +47,7 @@ class PostListView(ListAPIView):
 
 class PostDetailView(RetrieveAPIView):
     queryset = Post.objects.all()
-    serializer_class= PostListSerializer
-
+    serializer_class= PostListSerializer    
 # View for creating new post
 class PostCreateView(CreateAPIView):
     queryset = Post.objects.all()
@@ -102,5 +101,30 @@ class PostLikeListView(ListAPIView):
         queryset = post.like_set.all()
         return queryset
         
-
-        
+from datetime import date
+today = date.today()
+class HomeView(ListAPIView):
+    serializer_class = PostListSerializer
+    def get(self,request,*args,**kwargs):
+        if request.user.is_authenticated:
+            user = request.user
+            account = user.account
+            following = Follower.objects.filter(following_user=user)
+            if len(following)>0:
+                posts = list()
+                for u in following:
+                    print(u.following_user)
+                    u_posts = u.followed_user.post_set.all()
+                    print(u_posts)
+                    for post in u_posts:
+                        posts.append(post)
+                data = {
+                    "posts":posts
+                }
+                json.dumps(data)
+                print(data)
+                return Response(data,status.HTTP_200_OK)
+            else:
+                return Response('You do not following any one',status.HTTP_204_NO_CONTENT)
+        else:
+            return Response('Not Authenticated',status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
