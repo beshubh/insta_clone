@@ -109,10 +109,9 @@ class HomeView(ListAPIView):
     # queryset = NewsFeedPost.objects.all()
     def get_queryset(self,*args,**kwargs):
         if self.request.user.is_authenticated:
-            user = self.request.user
-            account = user.account
+            account = self.request.user.account
             queryset = NewsFeedPost.objects.filter(user=account)
-            
+            print(queryset)
             return queryset
             # else:
             #     return Response({

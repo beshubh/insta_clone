@@ -1,7 +1,8 @@
 from django.db import models
 from posts.models import Post
 from django.conf import settings
-from accounts.models import Account
+from accounts.models import Account,Follower
+from django.db.models.signals import post_save
 # Create your models here.
 class NewsFeedPost(models.Model):
     user = models.ForeignKey(Account,on_delete =  models.CASCADE)
@@ -12,15 +13,23 @@ class NewsFeedPost(models.Model):
         ordering = ['-timestamp']
 
 
-# def add_to_newsfeed(sender, instance, created, **kwargs):
-#     if created:
-#         NewsFeed.objects.create(post = instance)
-#         print('added to news feed')
+def add_to_newsfeed(sender, instance, created, **kwargs):
+    if created:
+        post_user = instance.user
+        followers = Follower.objects.filter(followed_user = post_user)
+        for user in followers:
+            print('creating ....')
+            NewsFeedPost.objects.create(user=user.following_user.account,post=instance)
+            print('created')
 
-# def update_to_newsfeed(sender, instance, created, **kwargs):
-#     if not created:
-#         instance.newsfeed.save()
-#         print('updated')
+            
+
+post_save.connect(add_to_newsfeed,sender=Post)
+
+def update_to_newsfeed(sender, instance, created, **kwargs):
+    if not created:
+        instance.newsfeed.save()
+        print('updated')
 
 
 
