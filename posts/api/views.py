@@ -31,6 +31,31 @@ from .pagination import PostLimitPagination,PostPageNumberPagination
 from posts.models import Like
 from accounts.models import Follower
 from newsfeed.models import NewsFeedPost
+
+
+
+from rest_framework.parsers import JSONParser,FormParser, MultiPartParser
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+class PostCreateView(APIView):
+    """
+    A view that can accept POST requests with JSON content.
+    """
+    parser_classes = [FormParser, MultiPartParser]
+    permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        user = request.user
+        account = user.account
+        caption = request.data['caption']
+        image = request.data['file']
+        post = Post.objects.create(user =user, caption = caption, image = image)
+        post.save()
+        return Response({
+            'success': True,
+            'message':'Uploaded successfully'
+        })
+
 # This view lists all the post 
 class PostListView(ListAPIView):
     serializer_class = PostListSerializer
@@ -47,16 +72,25 @@ class PostListView(ListAPIView):
 
         return queryset_list
 
+# This view will list all the post create by specific user
+# class UserPostListView(ListAPIView):
+#     serializer_class = PostListSerializer
+#     permission_classes = [AllowAny]
+#     pagination_class = PostPageNumberPagination
+#     def get_queryset(self,*args, **kwargs):
+#         pk = kwargs['pk']
+
+
 class PostDetailView(RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class= PostListSerializer    
 # View for creating new post
-class PostCreateView(CreateAPIView):
-    queryset = Post.objects.all()
-    serializer_class= PostCreateSerializer
-    permission_classes = [IsAuthenticated]
-    def perform_create(self,serializer):
-        serializer.save(user=self.request.user)
+# class PostCreateView(CreateAPIView):
+#     queryset = Post.objects.all()
+#     serializer_class= PostCreateSerializer
+#     permission_classes = [IsAuthenticated]
+#     def perform_create(self,serializer):
+#         serializer.save(user=self.request.user)
 #This view is used to update the post 
 class PostUpdateView(RetrieveUpdateAPIView):
     queryset = Post.objects.all()
@@ -104,6 +138,7 @@ class PostLikeListView(ListAPIView):
         
 from datetime import date
 today = date.today()
+
 class HomeView(ListAPIView):
     serializer_class = NewsFeedPostListSerializer
     # queryset = NewsFeedPost.objects.all()

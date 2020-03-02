@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions
+from rest_framework.serializers import HyperlinkedIdentityField
 from rest_framework.response import Response
 from knox.models import AuthToken
 from rest_framework import status
@@ -11,6 +12,11 @@ from .serializers import (UserSerializer,RegisterSerializer,
 
 from django.contrib.auth.models import User
 from accounts.models import Account ,Follower
+from posts.api.serializers import PostListSerializer
+from posts.api.pagination import PostLimitPagination
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import AllowAny
+from posts.models import Post
 # Register API
 class RegisterApiView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
@@ -55,12 +61,54 @@ class UserDetail(generics.RetrieveAPIView):
     serializer_class = UserDetailSerializer 
     queryset = Account.objects.all()
 
+class ProfileView(generics.RetrieveAPIView):
+    serializer_class = UserDetailSerializer
+    def get(self, request, format=None, **kwargs):
+        user = request.user
+        account = request.user.account
+        image = account.get_image_url()
+        username = user.username
+        email = user.email
+        followers = Follower.objects.filter(followed_user = user).count()
+        following = Follower.objects.filter(following_user = user).count()
+        return Response({
+            'username':username,
+            'email':email,
+            'profileImage':image,
+            'followers':followers,
+            'following':following
+        })
+class ProfileFollowersView(generics.ListAPIView):
+    serializer_class = FollowersListSerializer
+    def get_queryset(self):
+        user = self.request.user   
+        queryset = Follower.objects.filter(followed_user = user)
+        return queryset     
+class ProfileFollowingView(generics.ListAPIView):
+    serializer_class = FollowingListSerializer
+    def get_queryset(self):
+        user = self.request.user   
+        queryset = Follower.objects.filter(following_user = user)
+        return queryset  
+
+class UserPostListView(ListAPIView):
+    serializer_class = PostListSerializer
+    permission_classes = [AllowAny]
+    pagination_class = PostLimitPagination
+    def get_queryset(self,*args, **kwargs):
+        pk = self.kwargs['pk']
+        print(pk)
+        user = User.objects.get(pk=pk)
+        queryset = user.post_set.all()
+        return queryset
+
 class FollowUserView(generics.CreateAPIView):
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, pk,format=None):
         following_user = self.request.user
-        account = Account.objects.get(id=pk)
+        id = int(pk)
+        account = Account.objects.get(id=id)
         followed_user = account.user
         try:
             follow = Follower.objects.get(following_user=following_user,followed_user=followed_user)
@@ -73,13 +121,13 @@ class FollowUserView(generics.CreateAPIView):
                 return Response({
                     'success':True,
                     'message': 'You followed {}'.format(followed_user.username),
-                    status : status.HTTP_202_ACCEPTED
+                    'status' : status.HTTP_202_ACCEPTED
                     })
             else:
                 return Response({
                     'success':False,
                     'error':serializer.errors,
-                    status : status.HTTP_400_BAD_REQUEST,
+                    'status' : status.HTTP_400_BAD_REQUEST,
                     })
         
         else:
