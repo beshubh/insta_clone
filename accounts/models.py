@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse
 from django.http import HttpRequest,request
 from rest_framework.reverse import reverse_lazy
 from django.conf import  settings
-
+# from newsfeed.models import NewsFeedPost
 def upload_location(instance, filename):
     return 'accounts/{}/{}'.format(instance, filename)
 
@@ -13,6 +13,7 @@ def upload_location(instance, filename):
 class Account(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     image = models.ImageField(upload_to=upload_location,default='accounts/default.jpeg')
+    # newsfeed = models.ForeignKey(NewsFeedPost,on_delete = models.CASCADE)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     
@@ -53,3 +54,4 @@ class Follower(models.Model):
     
     def __str__(self):
         return self.following_user.username
+

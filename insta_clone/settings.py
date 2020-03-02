@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'posts',
     'comments',
     'accounts',
+    'newsfeed',
 ]
 
 MIDDLEWARE = [

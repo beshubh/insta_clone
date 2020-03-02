@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from accounts.models import Account,Follower
 from django.conf import  settings
+# from newsfeed.models import NewsFeed
+from posts.models import Post
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -68,6 +70,8 @@ class UserDetailSerializer(serializers.ModelSerializer):
         return str(obj.user.username)
     def get_email(self,obj):
         return obj.user.email
+
+
 class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follower

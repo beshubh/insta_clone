@@ -16,6 +16,7 @@ from .serializers import (
     PostLikeSerializer,
     UsersLikedPostSerializer
 )
+from newsfeed.api.serializers import NewsFeedPostListSerializer
 from accounts.api.serializers import UserListSerializer
 from rest_framework.permissions import (
     AllowAny,   
@@ -29,6 +30,7 @@ from .permissions import  IsOwnerOrReadOnly
 from .pagination import PostLimitPagination,PostPageNumberPagination
 from posts.models import Like
 from accounts.models import Follower
+from newsfeed.models import NewsFeedPost
 # This view lists all the post 
 class PostListView(ListAPIView):
     serializer_class = PostListSerializer
@@ -54,8 +56,7 @@ class PostCreateView(CreateAPIView):
     serializer_class= PostCreateSerializer
     permission_classes = [IsAuthenticated]
     def perform_create(self,serializer):
-        serializer.save(user=self.request.user) 
-
+        serializer.save(user=self.request.user)
 #This view is used to update the post 
 class PostUpdateView(RetrieveUpdateAPIView):
     queryset = Post.objects.all()
@@ -104,27 +105,22 @@ class PostLikeListView(ListAPIView):
 from datetime import date
 today = date.today()
 class HomeView(ListAPIView):
-    serializer_class = PostListSerializer
-    def get(self,request,*args,**kwargs):
-        if request.user.is_authenticated:
-            user = request.user
+    serializer_class = NewsFeedPostListSerializer
+    # queryset = NewsFeedPost.objects.all()
+    def get_queryset(self,*args,**kwargs):
+        if self.request.user.is_authenticated:
+            user = self.request.user
             account = user.account
-            following = Follower.objects.filter(following_user=user)
-            if len(following)>0:
-                posts = list()
-                for u in following:
-                    print(u.following_user)
-                    u_posts = u.followed_user.post_set.all()
-                    print(u_posts)
-                    for post in u_posts:
-                        posts.append(post)
-                data = {
-                    "posts":posts
-                }
-                json.dumps(data)
-                print(data)
-                return Response(data,status.HTTP_200_OK)
-            else:
-                return Response('You do not following any one',status.HTTP_204_NO_CONTENT)
+            queryset = NewsFeedPost.objects.filter(user=account)
+            
+            return queryset
+            # else:
+            #     return Response({
+            #         'message':'You do not following any one','status':status.HTTP_204_NO_CONTENT})
         else:
-            return Response('Not Authenticated',status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+            return Response({
+                'success':False,
+                'message':'Not Authenticated',
+                'status':status.HTTP_203_NON_AUTHORITATIVE_INFORMATION
+                })
+

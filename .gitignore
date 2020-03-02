@@ -10,6 +10,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+insta-venv/
 build/
 develop-eggs/
 dist/

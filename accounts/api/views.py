@@ -8,6 +8,7 @@ from .serializers import (UserSerializer,RegisterSerializer,
                          FollowingListSerializer,
                          UserDetailSerializer,
 )
+
 from django.contrib.auth.models import User
 from accounts.models import Account ,Follower
 # Register API
@@ -19,6 +20,7 @@ class RegisterApiView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response({
+            'success':True,
             'user':UserSerializer(user,context =self.get_serializer_context()).data,
             'token':AuthToken.objects.create(user)[1],  
         })
@@ -29,9 +31,10 @@ class LoginApiView(generics.GenericAPIView):
 
     def post(self, request,*args,**kwargs):
         serializer = self.get_serializer(data = request.data)
-        serializer.is_valid(    raise_exception=True)
+        serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
         return Response({
+            'sucess':True,
             'user':UserSerializer(user,context =self.get_serializer_context()).data,
             'token':AuthToken.objects.create(user)[1],  
         })
@@ -42,6 +45,7 @@ class UserApiView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
     def get_object(self):
         return self.request.user
+        
 
 class UserListView(generics.ListAPIView):
     serializer_class = UserListSerializer
@@ -66,12 +70,24 @@ class FollowUserView(generics.CreateAPIView):
             serializer = FollowSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save(following_user=following_user,followed_user = followed_user)
-                return Response('You followed {}'.format(followed_user.username), status = status.HTTP_202_ACCEPTED)
+                return Response({
+                    'success':True,
+                    'message': 'You followed {}'.format(followed_user.username),
+                    status : status.HTTP_202_ACCEPTED
+                    })
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response({
+                    'success':False,
+                    'error':serializer.errors,
+                    status : status.HTTP_400_BAD_REQUEST,
+                    })
         
         else:
-            return Response('You already follow {}'.format(followed_user.username),status.HTTP_200_OK)
+            return Response({
+                'success':False,    
+                'message':'You already follow {}'.format(followed_user.username),
+                'status':status.HTTP_200_OK,
+            })
 class UnFollowUserView(generics.CreateAPIView):
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -85,10 +101,17 @@ class UnFollowUserView(generics.CreateAPIView):
             follow = None
         if follow:
             follow.delete()
-            return Response('You unfollowed {}'.format(followed_user.username),status.HTTP_202_ACCEPTED)
-        
+            return Response({
+                'success':True,
+                'message': 'You unfollowed {}'.format(followed_user.username),
+                'status': status.HTTP_202_ACCEPTED
+                })
         else:
-            return Response('You does not follow {}'.format(followed_user.username),status.HTTP_200_OK)
+            return Response({
+                'success':False,
+                'message':'You do not follow {}'.format(followed_user.username),
+                'status':status.HTTP_400_BAD_REQUEST
+            })
         
 class FollowersList(generics.ListAPIView):
     serializer_class = FollowersListSerializer
