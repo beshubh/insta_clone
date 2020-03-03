@@ -19,6 +19,7 @@ class NewsFeedPostListSerializer(ModelSerializer):
     updated = SerializerMethodField()
     image = SerializerMethodField()
     caption = SerializerMethodField()
+    liked = SerializerMethodField()
     viewLikes = HyperlinkedIdentityField(
         view_name='insta-api:post_likes_api',
         lookup_field='pk'
@@ -35,6 +36,7 @@ class NewsFeedPostListSerializer(ModelSerializer):
             'timestamp',
             'updated',
             'comments',
+            'liked',
             'likes',
             'viewLikes'
         ]
@@ -54,3 +56,13 @@ class NewsFeedPostListSerializer(ModelSerializer):
         return obj.post.updated
     def get_caption(self, obj):
         return obj.post.caption
+    def get_liked(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            liked = obj.post.like_set.get(user = user)
+            if liked:
+                return True
+            else:
+                return False
+        else:
+            return False

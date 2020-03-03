@@ -118,13 +118,22 @@ class PostLikeCreateView(CreateAPIView):
             serializer = PostLikeSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save(account=user.account,post=post_)
-                return Response('LIKED', status = status.HTTP_201_CREATED)
+                return Response({
+                    'message':'LIKED',
+                    'status' : status.HTTP_201_CREATED,
+                })
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response({
+                    'error': serializer.errors,
+                    'status':tatus.HTTP_400_BAD_REQUEST
+                })
         
         else:
             like.delete()
-            return Response('DISLIKED')
+            return Response({
+                'message':'DISLIKED',
+                'status':status.HTTP_200_OK
+            })
         
 
 

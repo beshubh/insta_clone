@@ -21,6 +21,7 @@ class PostListSerializer(ModelSerializer):
         view_name='comments-api:api_list_comments',
         lookup_field='pk',
     )
+    liked = SerializerMethodField()
     likes = SerializerMethodField()
     viewLikes = HyperlinkedIdentityField(
         view_name='insta-api:post_likes_api',
@@ -38,6 +39,7 @@ class PostListSerializer(ModelSerializer):
             'timestamp',
             'updated',
             'comments',
+            'liked',
             'likes',
             'viewLikes'
         ]
@@ -50,6 +52,16 @@ class PostListSerializer(ModelSerializer):
         return str(obj.user.username)
     def get_userProfileUrl(self,obj):
         return obj.user.account.get_full_url()
+    def get_liked(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            liked = obj.like_set.get(user = user)
+            if liked:
+                return True
+            else:
+                return False
+        else:
+            return False
 
 class PostCreateSerializer(ModelSerializer):
     class Meta:
