@@ -31,7 +31,8 @@ from .pagination import PostLimitPagination,PostPageNumberPagination
 from posts.models import Like
 from accounts.models import Follower
 from newsfeed.models import NewsFeedPost
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 from rest_framework.parsers import JSONParser,FormParser, MultiPartParser
@@ -151,19 +152,23 @@ today = date.today()
 class HomeView(ListAPIView):
     serializer_class = NewsFeedPostListSerializer
     # queryset = NewsFeedPost.objects.all()
+    permission_classes = [IsAuthenticated]
     def get_queryset(self,*args,**kwargs):
-        if self.request.user.is_authenticated:
-            account = self.request.user.account
-            queryset = NewsFeedPost.objects.filter(user=account)
-            print(queryset)
-            return queryset
+        user = User.objects.get(pk = self.request.user.id)
+        print(user)
+        print(self.request)
+        print(self.request.headers)
+        print(self.request.data)
+        account = user.account
+        queryset = NewsFeedPost.objects.filter(user=account)
+        return queryset
             # else:
             #     return Response({
             #         'message':'You do not following any one','status':status.HTTP_204_NO_CONTENT})
-        else:
-            return Response({
-                'success':False,
-                'message':'Not Authenticated',
-                'status':status.HTTP_203_NON_AUTHORITATIVE_INFORMATION
-                })
+        # else:
+        #     return Response({
+        #         'success':False,
+        #         'message':'Not Authenticated',
+        #         'status':status.HTTP_203_NON_AUTHORITATIVE_INFORMATION
+        #         })
 

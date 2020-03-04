@@ -55,7 +55,8 @@ class PostListSerializer(ModelSerializer):
     def get_liked(self, obj):
         user = self.context['request'].user
         if user.is_authenticated:
-            liked = obj.like_set.get(user = user)
+            liked = Like.objects.filter(account = user.account, post= obj);
+            print(liked)
             if liked:
                 return True
             else:

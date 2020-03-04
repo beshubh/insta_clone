@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer,SerializerMethodField, HyperlinkedIdentityField
 from rest_framework import status
 from ..models import NewsFeedPost
-
+from posts.models import Like
 class NewsFeedPostListSerializer(ModelSerializer):
     url = HyperlinkedIdentityField(
         view_name = 'insta-api:post_detail_api',
@@ -59,7 +59,7 @@ class NewsFeedPostListSerializer(ModelSerializer):
     def get_liked(self, obj):
         user = self.context['request'].user
         if user.is_authenticated:
-            liked = obj.post.like_set.get(user = user)
+            liked = Like.objects.filter(account = user.account, post= obj.post);
             if liked:
                 return True
             else:
