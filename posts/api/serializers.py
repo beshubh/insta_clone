@@ -30,6 +30,7 @@ class PostListSerializer(ModelSerializer):
     class Meta:
         model = Post
         fields = [
+            'id',
             'url',
             'userProfileImage',
             'userName',
@@ -54,6 +55,7 @@ class PostListSerializer(ModelSerializer):
         return obj.user.account.get_full_url()
     def get_liked(self, obj):
         user = self.context['request'].user
+        print(user)
         if user.is_authenticated:
             liked = Like.objects.filter(account = user.account, post= obj);
             print(liked)

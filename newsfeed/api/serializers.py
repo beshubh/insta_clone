@@ -3,27 +3,21 @@ from rest_framework import status
 from ..models import NewsFeedPost
 from posts.models import Like
 class NewsFeedPostListSerializer(ModelSerializer):
+    id = SerializerMethodField()
     url = SerializerMethodField()
     userProfileImage = SerializerMethodField()
     userName = SerializerMethodField()
     userProfileUrl = SerializerMethodField()
-    comments = HyperlinkedIdentityField(
-        view_name='comments-api:api_list_comments',
-        lookup_field='pk',
-    )
     likes = SerializerMethodField()
     timestamp = SerializerMethodField()
     updated = SerializerMethodField()
     image = SerializerMethodField()
     caption = SerializerMethodField()
     liked = SerializerMethodField()
-    viewLikes = HyperlinkedIdentityField(
-        view_name='insta-api:post_likes_api',
-        lookup_field='pk'
-    )
     class Meta:
         model = NewsFeedPost
         fields = [
+            'id',
             'url',
             'userProfileImage',
             'userName',
@@ -32,11 +26,11 @@ class NewsFeedPostListSerializer(ModelSerializer):
             'caption',
             'timestamp',
             'updated',
-            'comments',
             'liked',
             'likes',
-            'viewLikes'
         ]
+    def get_id(self, obj):
+        return obj.post.id
     def get_url(self, obj):
         return obj.post.get_full_url();
     def get_image(self, obj):
