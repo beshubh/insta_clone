@@ -41,10 +41,13 @@ class LoginApiView(generics.GenericAPIView):
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
+        auth_token = AuthToken.objects.create(user);
+        token  = auth_token[1]
+        print(token)
         return Response({
             'sucess':True,
             'user':UserSerializer(user,context =self.get_serializer_context()).data,
-            'token':AuthToken.objects.create(user)[1],  
+            'token':token,  
         })
 
 # Get User API

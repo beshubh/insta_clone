@@ -110,27 +110,25 @@ class PostLikeCreateView(CreateAPIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, pk,format=None):
         user = self.request.user
-        post_ = Post.objects.get(id=self.kwargs['pk'])
+        post_ = Post.objects.get(id=pk)
         try:
-            like = Like.objects.get(account=user.account,post=post_)
+            like = Like.objects.get(account=user.account, post=post_)
         except:
             like = None
         if not like:
-            serializer = PostLikeSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save(account=user.account,post=post_)
-                return Response({
-                    'message':'LIKED',
-                    'status' : status.HTTP_201_CREATED,
-                })
-            else:
-                return Response({
-                    'error': serializer.errors,
-                    'status':tatus.HTTP_400_BAD_REQUEST
-                })
-        
+            like = Like.objects.create(account = user.account, post = post_)
+            like.save();
+            print('like',like);
+            print('user ', user)
+            print(post_)
+            print('liked the post')
+            return Response({
+                'message':'LIKED',
+                'status' : status.HTTP_201_CREATED,
+            })
         else:
             like.delete()
+            print('disliked the post')
             return Response({
                 'message':'DISLIKED',
                 'status':status.HTTP_200_OK

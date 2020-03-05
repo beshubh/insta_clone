@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from accounts.models import Account
+from rest_framework.reverse import reverse
 def upload_location(instance, filename):
     return 'posts/{}/{}'.format(instance, filename)
 
@@ -17,7 +18,22 @@ class Post(models.Model):
         return self.caption
     class Meta:
         ordering=['-timestamp']
-        
+    def get_full_image_url(self):
+        if settings.DEBUG:
+            return 'http://127.0.0.1:8000'+self.image.url
+        else:
+            pass
+    def get_absolute_url(self):
+        path = reverse('insta-api:post_detail_api',kwargs={'pk':self.pk})
+        return path
+    def get_full_url(self):
+        if settings.DEBUG:
+            domain = '127.0.0.1:8000'
+        else:
+            domain = None
+        path = self.get_absolute_url()
+        return 'http://{}{}'.format(domain,path)
+                
 class Like(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     post = models.ForeignKey(Post,on_delete=models.CASCADE)
