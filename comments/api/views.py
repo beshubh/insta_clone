@@ -38,11 +38,11 @@ class CommentCreateView(CreateAPIView):
     serializer_class = CommentCreateSerializer
     permission_classes = [IsAuthenticated]
     def post(self, request, pk, format=None):
-        print(pk)
+        print(pk,'[comments views.py 41 ]')
         pst = Post.objects.get(id = pk)
-        print(pst)
+        print(pst,'[comments views.py 43 ]')
         user = request.user
-        print(request.data)
+        print(request.data,'[comments views.py 45]')
         serializer = CommentCreateSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save(post = pst, user = user)
