@@ -17,6 +17,6 @@ urlpatterns = [
     path('<int:pk>/likes/',PostLikeListView.as_view(),name='post_likes_api'),
     path('<int:pk>/',PostDetailView.as_view(),name='post_detail_api'),
     path('<int:pk>/comments/',include('comments.api.urls')),
-    path('<int:pk>/update/',PostUpdateView.as_view(),name='post_update_api'), 
+    path('<int:pk>/edit/',PostUpdateView.as_view(),name='post_update_api'), 
     path('<int:pk>/delete/',PostDeleteView.as_view(),name='post_delete_api'), 
 ]

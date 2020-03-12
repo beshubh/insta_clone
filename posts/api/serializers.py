@@ -16,7 +16,7 @@ class PostListSerializer(ModelSerializer):
     )
     userProfileImage = SerializerMethodField()
     userName = SerializerMethodField()
-    userProfileUrl = SerializerMethodField()
+    user_id = SerializerMethodField()
     comments = HyperlinkedIdentityField(
         view_name='comments-api:api_list_comments',
         lookup_field='pk',
@@ -34,7 +34,7 @@ class PostListSerializer(ModelSerializer):
             'url',
             'userProfileImage',
             'userName',
-            'userProfileUrl',
+            'user_id',
             'image',
             'caption',
             'timestamp',
@@ -51,8 +51,8 @@ class PostListSerializer(ModelSerializer):
         return obj.user.account.get_image_url()
     def get_userName(self,obj):
         return str(obj.user.username)
-    def get_userProfileUrl(self,obj):
-        return obj.user.account.get_full_url()
+    def get_user_id(self,obj):
+        return obj.user.account.id
     def get_liked(self, obj):
         user = self.context['request'].user
         print(user)

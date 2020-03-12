@@ -38,22 +38,27 @@ User = get_user_model()
 from rest_framework.parsers import JSONParser,FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics
 
-class PostCreateView(APIView):
+class PostCreateView(generics.GenericAPIView):
     """
     A view that can accept POST requests with JSON content.
     """
-    parser_classes = [FormParser, MultiPartParser]
     permission_classes = [IsAuthenticated]
-    def post(self, request, format=None):
+    serializer_class = PostCreateSerializer
+    def post(self, request,*args, **kwargs):
+        print(request.data)
         user = request.user
         account = user.account
         caption = request.data['caption']
-        image = request.data['file']
+        image = request.data['image']
+        print(request.data)
         post = Post.objects.create(user =user, caption = caption, image = image)
         post.save()
+        post_id = post.id
         return Response({
             'success': True,
+            'id':post_id,
             'message':'Uploaded successfully'
         })
 
@@ -84,14 +89,10 @@ class PostListView(ListAPIView):
 
 class PostDetailView(RetrieveAPIView):
     queryset = Post.objects.all()
-    serializer_class= PostListSerializer    
-# View for creating new post
-# class PostCreateView(CreateAPIView):
-#     queryset = Post.objects.all()
-#     serializer_class= PostCreateSerializer
-#     permission_classes = [IsAuthenticated]
-#     def perform_create(self,serializer):
-#         serializer.save(user=self.request.user)
+    serializer_class= PostListSerializer
+    permission_classes = [IsAuthenticated]
+
+
 #This view is used to update the post 
 class PostUpdateView(RetrieveUpdateAPIView):
     queryset = Post.objects.all()
@@ -149,7 +150,6 @@ today = date.today()
 
 class HomeView(ListAPIView):
     serializer_class = NewsFeedPostListSerializer
-    # queryset = NewsFeedPost.objects.all()
     permission_classes = [IsAuthenticated]
     def get_queryset(self,*args,**kwargs):
         user = User.objects.get(pk = self.request.user.id)
@@ -160,13 +160,5 @@ class HomeView(ListAPIView):
         account = user.account
         queryset = NewsFeedPost.objects.filter(user=account)
         return queryset
-            # else:
-            #     return Response({
-            #         'message':'You do not following any one','status':status.HTTP_204_NO_CONTENT})
-        # else:
-        #     return Response({
-        #         'success':False,
-        #         'message':'Not Authenticated',
-        #         'status':status.HTTP_203_NON_AUTHORITATIVE_INFORMATION
-        #         })
+
 

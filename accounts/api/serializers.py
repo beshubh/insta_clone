@@ -42,6 +42,21 @@ class LoginSerializer(serializers.Serializer):
         else:
             raise serializers.ValidationError('Incorrect Credentials')
 
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
+    class Meta:
+        model = Account
+        fields = ('id','username', 'image','email')
+    
+    def get_username(self,obj):
+        return obj.user.username
+    def get_email(self, obj):
+        return obj.user.email
+
+    
+
+
 class UserListSerializer(serializers.ModelSerializer):
     userName = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
@@ -62,13 +77,41 @@ class UserListSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     userName = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
+    followers = serializers.SerializerMethodField()
+    following = serializers.SerializerMethodField()
+    user_id = serializers.SerializerMethodField()
+    follows = serializers.SerializerMethodField()
     class Meta:
         model = Account
-        fields = ['userName','email','image']
+        fields = ['userName','user_id','email','image','follows','followers','following']
     def get_userName(self,obj):
         return str(obj.user.username)
     def get_email(self,obj):
         return obj.user.email
+    def get_followers(self, obj):
+        user = obj.user
+        followers = Follower.objects.filter(followed_user = user).count()
+        return followers
+    def get_following(self, obj):
+        user = obj.user
+        following = Follower.objects.filter(following_user = user).count()
+        return following
+    def get_user_id(self, obj):
+        return obj.id
+    def get_follows(self, obj):
+        following_user = self.context['request'].user
+        followed_user = obj.user
+        follows = None
+        try:
+            follows = Follower.objects.get(following_user =following_user, followed_user = followed_user)
+        except:
+            follows = None
+        if follows:
+            return True
+        return False
+
+
+
 
 
 class FollowSerializer(serializers.ModelSerializer):
@@ -78,27 +121,52 @@ class FollowSerializer(serializers.ModelSerializer):
 class FollowersListSerializer(serializers.ModelSerializer):
     userName = serializers.SerializerMethodField()
     userProfileImage = serializers.SerializerMethodField()
-    urlToProfile = serializers.SerializerMethodField()
+    user_id = serializers.SerializerMethodField()
+    follows = serializers.SerializerMethodField()
     class Meta:
         model = Follower
-        fields = ['userName','userProfileImage','urlToProfile']
+        fields = ['userName','follows','user_id','userProfileImage']
     def get_userName(self,obj):
         return str(obj.following_user.username)
     def get_userProfileImage(self,obj):
         return obj.following_user.account.get_image_url()
-    def get_urlToProfile(self,obj):
-        return obj.following_user.account.get_full_url()
+    def get_user_id(self, obj):
+        return obj.following_user.account.id
+    def get_follows(self, obj):
+        following_user = self.context['request'].user
+        followed_user = obj.following_user
+        follows = None
+        try:
+            follows = Follower.objects.get(following_user =following_user, followed_user = followed_user)
+        except:
+            follows = None
+        if follows:
+            return True
+        return False
+
 class FollowingListSerializer(serializers.ModelSerializer):
     userName = serializers.SerializerMethodField()
     userProfileImage = serializers.SerializerMethodField()
-    urlToProfile = serializers.SerializerMethodField()
+    user_id = serializers.SerializerMethodField()
+    follows = serializers.SerializerMethodField()
     class Meta:
         model = Follower
-        fields = ['userName','userProfileImage','urlToProfile']
+        fields = ['userName','user_id','follows','userProfileImage']
     def get_userName(self,obj):
         return str(obj.followed_user.username)
     def get_userProfileImage(self,obj):
         return obj.followed_user.account.get_image_url()
-    def get_urlToProfile(self,obj):
-        return obj.followed_user.account.get_full_url()
+    def get_user_id(self, obj):
+        return obj.followed_user.account.id
+    def get_follows(self,obj):
+        following_user = self.context['request'].user
+        followed_user = obj.followed_user
+        try:
+            follows = Follower.objects.get(following_user =following_user, followed_user = followed_user)
+        except:
+            follows = None
+        if follows:
+            return True
+        return False
+
         

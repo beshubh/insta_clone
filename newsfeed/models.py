@@ -10,14 +10,19 @@ class NewsFeedPost(models.Model):
     timestamp = models.DateTimeField(auto_now=False,auto_now_add=True)
 
     class Meta:
+
         ordering = ['-timestamp']
 
 
 def add_to_newsfeed(sender, instance, created, **kwargs):
     if created:
         post_user = instance.user
+        print(post_user)
+        NewsFeedPost.objects.create(user = post_user.account, post = instance)
         followers = Follower.objects.filter(followed_user = post_user)
+
         for user in followers:
+            print(user)
             print('creating ....')
             NewsFeedPost.objects.create(user=user.following_user.account,post=instance)
             print('created')

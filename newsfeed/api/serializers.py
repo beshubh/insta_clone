@@ -7,7 +7,7 @@ class NewsFeedPostListSerializer(ModelSerializer):
     url = SerializerMethodField()
     userProfileImage = SerializerMethodField()
     userName = SerializerMethodField()
-    userProfileUrl = SerializerMethodField()
+    user_id = SerializerMethodField()
     likes = SerializerMethodField()
     timestamp = SerializerMethodField()
     updated = SerializerMethodField()
@@ -21,7 +21,7 @@ class NewsFeedPostListSerializer(ModelSerializer):
             'url',
             'userProfileImage',
             'userName',
-            'userProfileUrl',
+            'user_id',
             'image',
             'caption',
             'timestamp',
@@ -44,8 +44,8 @@ class NewsFeedPostListSerializer(ModelSerializer):
         return obj.post.user.account.get_image_url()
     def get_userName(self,obj):
         return str(obj.post.user.username)
-    def get_userProfileUrl(self,obj):
-        return obj.post.user.account.get_full_url()
+    def get_user_id(self,obj):
+        return obj.post.user.account.id
     def get_timestamp(self,obj):
         return obj.post.timestamp
     def get_updated(self,obj):

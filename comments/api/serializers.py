@@ -7,43 +7,43 @@ from comments.models import Comment,Reply
 
 class CommentsSerializer(ModelSerializer):
     userName = SerializerMethodField()
-    urlToProfile = SerializerMethodField()
     urlToProfileImage = SerializerMethodField()
+    user_id = SerializerMethodField()
     class Meta:
         model = Comment
         fields = [
             'post',
             'userName',
+            'user_id',
             'urlToProfileImage',
-            'urlToProfile',
             'text',
             'timestamp',
         ]
     def get_userName(self,obj):
         return obj.user.username
-    def get_urlToProfile(self,obj):
-        url = obj.user.account.get_full_url()
+    def get_user_id(self,obj):
+        url = obj.user.account.id
         return url
     def get_urlToProfileImage(self, obj):
         url_to_image = obj.user.account.get_image_url()
         return url_to_image
 class CommentCreateSerializer(ModelSerializer):
     userName = SerializerMethodField()
-    urlToProfile = SerializerMethodField()
     urlToProfileImage = SerializerMethodField()
+    user_id = SerializerMethodField()
     class Meta:
         model = Comment
         fields = [
             'text',
             'timestamp',
             'userName',
+            'user_id',
             'urlToProfileImage',
-            'urlToProfile',
         ]
     def get_userName(self,obj):
         return obj.user.username
-    def get_urlToProfile(self,obj):
-        url = obj.user.account.get_full_url()
+    def get_user_id(self,obj):
+        url = obj.user.account.id
         return url
     def get_urlToProfileImage(self, obj):
         url_to_image = obj.user.account.get_image_url()

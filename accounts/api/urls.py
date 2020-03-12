@@ -5,12 +5,14 @@ from .views import (RegisterApiView,LoginApiView,
                     FollowingList,UnFollowUserView,
                     ProfileView,ProfileFollowersView,
                     ProfileFollowingView,UserPostListView,
+                    EditProfileView,check
                     )
 from knox import views as knox_views    
 
 urlpatterns =[
     path('auth/',include('knox.urls')),
     path('auth/register',RegisterApiView.as_view(),name='api_register'),
+    path('check_username/<str:un>',check,name='check-username'),
     path('profile/',ProfileView.as_view(), name='api_profile'),
     path('profile/followers/',ProfileFollowersView.as_view(), name='api_profile_followers'),
     path('profile/following/',ProfileFollowingView.as_view(), name='api_profile_following'),
@@ -19,6 +21,7 @@ urlpatterns =[
     path('auth/logout/',knox_views.LogoutView.as_view(),name='api_logout'), 
     path('auth/accounts/',UserListView.as_view(),name='api_accounts_list'),
     path('auth/accounts/<int:pk>/',UserDetail.as_view(),name='api_account_detail'),
+    path('auth/accounts/<int:pk>/edit/',EditProfileView.as_view(), name = 'api_profile_edit'),
     path('auth/accounts/<int:pk>/posts/',UserPostListView.as_view(),name='api_account_detail_posts'),
     path('auth/accounts/<int:pk>/follow/',FollowUserView.as_view(),name='api_account_follow'),
     path('auth/accounts/<int:pk>/unfollow/',UnFollowUserView.as_view(),name='api_account_unfollow'),
