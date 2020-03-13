@@ -10,7 +10,7 @@ from .views import (HomeView,
                     PostLikeListView,
                     PostCreateView)
 urlpatterns = [
-    path('',PostListView.as_view(),name='post_list_api'),  
+    path('explore/',PostListView.as_view(),name='post_list_api'),  
     path('home/',HomeView.as_view(),name='home_api'),  
     path('add_post/',PostCreateView.as_view(),name='add_post_api'), 
     path('<int:pk>/like/',PostLikeCreateView.as_view(),name='like_post_api'),

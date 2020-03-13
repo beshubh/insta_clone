@@ -151,6 +151,7 @@ today = date.today()
 class HomeView(ListAPIView):
     serializer_class = NewsFeedPostListSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PostPageNumberPagination
     def get_queryset(self,*args,**kwargs):
         user = User.objects.get(pk = self.request.user.id)
         print(user)

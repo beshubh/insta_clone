@@ -60,20 +60,54 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
 class UserListSerializer(serializers.ModelSerializer):
     userName = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
-    urlToProfile = serializers.HyperlinkedIdentityField(
-        view_name='accounts-api:api_account_detail',
-        lookup_field = 'pk',
-    )
+    follows = serializers.SerializerMethodField()
     # userProfileImage =serializers. SerializerMethodField()    
     class Meta:
         model = Account
-        fields = ['userName','email','image','urlToProfile']
+        fields = ['userName','id','email','image','follows']
     def get_userName(self, obj):
         return obj.user.username
     def get_email(self, obj):
         return obj.user.email
     def get_userProfileImage(self,obj):
         return obj.get_image_url()
+    def get_follows(self, obj):
+        following_user = self.context['request'].user
+        followed_user = obj.user
+        follows = None
+        try:
+            follows = Follower.objects.get(following_user =following_user, followed_user = followed_user)
+        except:
+            follows = None
+        if follows:
+            return True
+        return False
+class SearchUsersListSerializer(serializers.ModelSerializer):
+    follows = serializers.SerializerMethodField()
+    user_id = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    
+
+    class Meta:
+        model = User
+        fields = ['username','user_id','email','image','follows']
+    
+    def get_image(self,obj):
+        return obj.account.get_image_url()
+    def get_user_id(self,obj):
+        return obj.id
+    def get_follows(self, obj):
+        following_user = self.context['request'].user
+        followed_user = obj
+        follows = None
+        try:
+            follows = Follower.objects.get(following_user =following_user, followed_user = followed_user)
+        except:
+            follows = None
+        if follows:
+            return True
+        return False
+    
 class UserDetailSerializer(serializers.ModelSerializer):
     userName = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()

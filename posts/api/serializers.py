@@ -17,10 +17,7 @@ class PostListSerializer(ModelSerializer):
     userProfileImage = SerializerMethodField()
     userName = SerializerMethodField()
     user_id = SerializerMethodField()
-    comments = HyperlinkedIdentityField(
-        view_name='comments-api:api_list_comments',
-        lookup_field='pk',
-    )
+    comments = SerializerMethodField()
     liked = SerializerMethodField()
     likes = SerializerMethodField()
     viewLikes = HyperlinkedIdentityField(
@@ -65,6 +62,9 @@ class PostListSerializer(ModelSerializer):
                 return False
         else:
             return False
+    def get_comments(self,obj):
+        return obj.comment_set.all().count()
+
 
 class PostCreateSerializer(ModelSerializer):
     class Meta:

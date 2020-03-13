@@ -7,7 +7,7 @@ from .serializers import (UserSerializer,RegisterSerializer,
                          LoginSerializer,UserListSerializer,
                          FollowSerializer,FollowersListSerializer,
                          FollowingListSerializer,UpdateProfileSerializer,
-                         UserDetailSerializer,
+                         UserDetailSerializer,SearchUsersListSerializer
 )
 
 from django.contrib.auth.models import User
@@ -73,10 +73,6 @@ class EditProfileView(generics.GenericAPIView):
                 temp_user = User.objects.get(username = username)
             except:
                 temp_user = None
-            if temp_user:
-                # user with this username exists already
-                print('here')
-                return JsonResponse({"detail":"username already exists"},status=422)
             try:
                 email = request.data['email']
             except:
@@ -106,6 +102,14 @@ class UserApiView(generics.RetrieveAPIView):
 class UserListView(generics.ListAPIView):
     serializer_class = UserListSerializer
     queryset = Account.objects.all()
+
+class SearchUsersListview(generics.ListAPIView):
+    serializer_class = SearchUsersListSerializer
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        print(query)
+        queryset = User.objects.filter(username__icontains = query)
+        return queryset    
 
 class UserDetail(generics.RetrieveAPIView):
     serializer_class = UserDetailSerializer 
