@@ -20,6 +20,8 @@ from posts.models import Post
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.exceptions import APIException
 from django.http import JsonResponse
+
+from django.contrib.auth import authenticate
 # Register API
 class RegisterApiView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
@@ -41,17 +43,19 @@ class LoginApiView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
     def post(self, request,*args,**kwargs):
-        serializer = self.get_serializer(data = request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data
-        auth_token = AuthToken.objects.create(user);
-        token  = auth_token[1]
-        print(token)
-        return Response({
-            'sucess':True,
-            'user':UserSerializer(user,context =self.get_serializer_context()).data,
-            'token':token,  
-        })
+        data = request.data
+        user = authenticate(**data)
+        if user and user.is_active:
+            auth_token = AuthToken.objects.create(user);
+            token  = auth_token[1]
+            print(token)
+            return Response({
+                'sucess':True,
+                'user':UserSerializer(user,context =self.get_serializer_context()).data,
+                'token':token,  
+            })
+        else:
+            return JsonResponse({"detail":"Incorrect credentials"},status=401)
 # Update profile
 class EditProfileView(generics.GenericAPIView):
     serializer_class = UpdateProfileSerializer

@@ -14,7 +14,7 @@ urlpatterns =[
     path('auth/',include('knox.urls')),
     path('auth/register',RegisterApiView.as_view(),name='api_register'),
     path('check_username/<str:un>',check,name='check-username'),
-    path('search/',SearchUsersListview.as_view(), name='api_search_users'), 
+    path('auth/accounts/search/',SearchUsersListview.as_view(), name='api_search_users'), 
     path('profile/',ProfileView.as_view(), name='api_profile'),
     path('profile/followers/',ProfileFollowersView.as_view(), name='api_profile_followers'),
     path('profile/following/',ProfileFollowingView.as_view(), name='api_profile_following'),

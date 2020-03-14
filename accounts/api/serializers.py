@@ -35,12 +35,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
-    def validate(self, data):
-        user = authenticate(**data)
-        if user and user.is_active:
-            return user
-        else:
-            raise serializers.ValidationError('Incorrect Credentials')
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
@@ -58,14 +52,17 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
 
 
 class UserListSerializer(serializers.ModelSerializer):
-    userName = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
     follows = serializers.SerializerMethodField()
+    user_id = serializers.SerializerMethodField()
     # userProfileImage =serializers. SerializerMethodField()    
     class Meta:
         model = Account
-        fields = ['userName','id','email','image','follows']
-    def get_userName(self, obj):
+        fields = ['username','user_id','email','image','follows']
+    def get_user_id(self,obj):
+        return obj.user.id
+    def get_username(self, obj):
         return obj.user.username
     def get_email(self, obj):
         return obj.user.email

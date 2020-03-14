@@ -45,9 +45,9 @@ class Account(models.Model):
 
 
 class Follower(models.Model):
-    following_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,\
+    following_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,\
                                                 related_name='following_user',null=True,blank=True)
-    followed_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,\
+    followed_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,\
                                                 related_name='followed_user',null=True,blank=True)
     on = models.DateTimeField(auto_now_add=True)
     
