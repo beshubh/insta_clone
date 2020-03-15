@@ -32,14 +32,14 @@ class Account(models.Model):
         if settings.DEBUG:
             domain = '127.0.0.1:8000'
         else:
-            domain = None
+            domain = 'insta-clone.pythonanywhere.com'
         path = self.get_absolute_url()
         return 'http://{}{}'.format(domain,path)
     def get_image_url(self):
         if settings.DEBUG:
             domain = '127.0.0.1:8000'
         else:
-            domain = None
+            domain = 'insta-clone.pythonanywhere.com'
         path = self.image.url
         return 'http://{}{}'.format(domain,path)
 

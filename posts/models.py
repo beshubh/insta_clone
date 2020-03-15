@@ -2,6 +2,11 @@ from django.db import models
 from django.conf import settings
 from accounts.models import Account
 from rest_framework.reverse import reverse
+
+# from django.contrib.sites.models import Site
+# current_site = Site.objects.get_current()
+# print(current_site.domain);
+
 def upload_location(instance, filename):
     return 'posts/{}/{}'.format(instance, filename)
 
@@ -22,7 +27,7 @@ class Post(models.Model):
         if settings.DEBUG:
             return 'http://127.0.0.1:8000'+self.image.url
         else:
-            pass
+            return 'http://insta-clone.pythonanywhere.com'+self.image.url
     def get_absolute_url(self):
         path = reverse('insta-api:post_detail_api',kwargs={'pk':self.pk})
         return path
@@ -30,7 +35,7 @@ class Post(models.Model):
         if settings.DEBUG:
             domain = '127.0.0.1:8000'
         else:
-            domain = None
+            domain = 'insta-clone.pythonanywhere.com'
         path = self.get_absolute_url()
         return 'http://{}{}'.format(domain,path)
                 

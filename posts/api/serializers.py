@@ -111,12 +111,11 @@ class PostLikeSerializer(ModelSerializer):
         fields = ['created']
 class UsersLikedPostSerializer(ModelSerializer):
     userName = SerializerMethodField()
-    urlToProfile = SerializerMethodField()
     userProfileImage = SerializerMethodField()
 
     class Meta:
         model = Like
-        fields = ['userName','userProfileImage','urlToProfile']
+        fields = ['userName','userProfileImage']
     
     def get_userName(self, obj):
         return obj.account.user.username
@@ -124,5 +123,3 @@ class UsersLikedPostSerializer(ModelSerializer):
         return obj.account.user.email
     def get_userProfileImage(self,obj):
         return obj.accoutn.get_image_url
-    def get_urlToProfile(self,obj):
-        return obj.account.get_full_url()
