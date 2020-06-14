@@ -29,17 +29,11 @@ class Account(models.Model):
     def get_absolute_url(self):
         return reverse('accounts-api:api_account_detail',kwargs={'pk':self.pk})
     def get_full_url(self):
-        if settings.DEBUG:
-            domain = '127.0.0.1:8000'
-        else:
-            domain = 'insta-clone.pythonanywhere.com'
+        domain = 'instaclone.pythonanywhere.com'
         path = self.get_absolute_url()
         return 'http://{}{}'.format(domain,path)
     def get_image_url(self):
-        if settings.DEBUG:
-            domain = '127.0.0.1:8000'
-        else:
-            domain = 'insta-clone.pythonanywhere.com'
+        domain = 'instaclone.pythonanywhere.com'
         path = self.image.url
         return 'http://{}{}'.format(domain,path)
 

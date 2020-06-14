@@ -25,7 +25,7 @@ SECRET_KEY = 'zb=+wz2_!n0bnf6#6mb%@hs!vzq*x)4hv2_u0r=y-=3k3#3bbl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['instaclone.pythonanywhere.com','127.0.0.1']
 
 
 # Application definition

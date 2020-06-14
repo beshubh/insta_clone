@@ -24,18 +24,12 @@ class Post(models.Model):
     class Meta:
         ordering=['-timestamp']
     def get_full_image_url(self):
-        if settings.DEBUG:
-            return 'http://127.0.0.1:8000'+self.image.url
-        else:
-            return 'http://insta-clone.pythonanywhere.com'+self.image.url
+        return 'http://instaclone.pythonanywhere.com'+self.image.url
     def get_absolute_url(self):
         path = reverse('insta-api:post_detail_api',kwargs={'pk':self.pk})
         return path
     def get_full_url(self):
-        if settings.DEBUG:
-            domain = '127.0.0.1:8000'
-        else:
-            domain = 'insta-clone.pythonanywhere.com'
+        domain = 'instaclone.pythonanywhere.com'
         path = self.get_absolute_url()
         return 'http://{}{}'.format(domain,path)
                 
